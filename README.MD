@@ -3,13 +3,13 @@ Term Explorer
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0) ![This script was last tested in Nuix 7.8](https://img.shields.io/badge/Script%20Tested%20in%20Nuix-7.8-green.svg)
 
-View the GitHub project [here](LINK_TO_PROJECT) or download the latest release [here](LINK_TO_PROJECT_RELEASES).
+View the GitHub project [here](https://github.com/Nuix/Term-Explorer) or download the latest release [here](https://github.com/Nuix/Term-Explorer/releases).
 
 # Overview
 
 **Written By:** Jason Wells
 
-[PROJECT_DESCRIPTION]
+Provides an interface to explore the terms present in a Nuix case.
 
 # Getting Started
 
@@ -20,15 +20,9 @@ Begin by downloading the latest release of this code.  Extract the contents of t
 - `%appdata%\Nuix\Scripts` - User level script directory
 - `%programdata%\Nuix\Scripts` - System level script directory
 
-[PROJECT_USAGE_SECTIONS]
-
 # Cloning this Repository
 
-This script also relies on code from [SuperUtilities](https://github.com/Nuix/SuperUtilities), which contains the code to do perform the term expansion.  This JAR file is not included in the repository (although it is included in release downloads).  If you clone this repository, you will also want to obtain a copy of SuperUtilities.jar by either:
-1. Building it from [the source](https://github.com/Nuix/SuperUtilities)
-2. Downloading an already built JAR file from the [Nx releases](https://github.com/Nuix/SuperUtilities/releases)
-
-Once you also have a copy of SuperUtilities.jar, make sure to include it in the same directory as the script.
+TODO
 
 # License
 
