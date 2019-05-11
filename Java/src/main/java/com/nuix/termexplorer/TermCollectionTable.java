@@ -40,13 +40,14 @@ public class TermCollectionTable extends JPanel {
 	private JTable table;
 	private TermCollectionTableModel model = new TermCollectionTableModel();
 	private JComboBox<String> termOperator;
+	private JLabel lblTermCount;
 	
 	public TermCollectionTable(Window nuixWindow) {
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[]{0, 0};
-		gridBagLayout.rowHeights = new int[]{0, 0, 0, 0};
+		gridBagLayout.rowHeights = new int[]{0, 0, 0, 0, 0};
 		gridBagLayout.columnWeights = new double[]{1.0, Double.MIN_VALUE};
-		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 1.0, Double.MIN_VALUE};
+		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
 		setLayout(gridBagLayout);
 		
 		JToolBar toolBar = new JToolBar();
@@ -58,12 +59,16 @@ public class TermCollectionTable extends JPanel {
 		gbc_toolBar.gridy = 0;
 		add(toolBar, gbc_toolBar);
 		
-		JButton btnSearch = new JButton("Search Query");
+		JButton btnSearch = new JButton("Execute Query");
 		btnSearch.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Map<String,Object> tabSettings = new HashMap<String,Object>();
-				tabSettings.put("search", buildQuery());
-				nuixWindow.openTab("workbench", tabSettings);
+				if(hasNoTerms()) {
+					CommonDialogs.showError("You currently have no terms in your list.", "No Terms");
+				} else {
+					Map<String,Object> tabSettings = new HashMap<String,Object>();
+					tabSettings.put("search", buildQuery());
+					nuixWindow.openTab("workbench", tabSettings);	
+				}
 			}
 		});
 		btnSearch.setIcon(new ImageIcon(TermCollectionTable.class.getResource("/com/nuix/termexplorer/magnifier.png")));
@@ -72,8 +77,12 @@ public class TermCollectionTable extends JPanel {
 		JButton btnCopyQuery = new JButton("Copy Query");
 		btnCopyQuery.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				StringSelection query = new StringSelection(buildQuery());
-				Toolkit.getDefaultToolkit().getSystemClipboard().setContents(query, null);
+				if(hasNoTerms()) {
+					CommonDialogs.showError("You currently have no terms in your list.", "No Terms");
+				} else {
+					StringSelection query = new StringSelection(buildQuery());
+					Toolkit.getDefaultToolkit().getSystemClipboard().setContents(query, null);
+				}
 			}
 		});
 		btnCopyQuery.setIcon(new ImageIcon(TermCollectionTable.class.getResource("/com/nuix/termexplorer/page_copy.png")));
@@ -82,12 +91,16 @@ public class TermCollectionTable extends JPanel {
 		JButton btnSaveQuery = new JButton("Save Query");
 		btnSaveQuery.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				File textFile = CommonDialogs.saveFileDialog("C:\\", "Text File (*.txt)", "txt", "Save Query");
-				if(textFile != null) {
-					try(SimpleTextFileWriter sw = new SimpleTextFileWriter(textFile)){
-						sw.writeLine(buildQuery());
-					} catch (IOException e1) {
-						CommonDialogs.showError("Error saving query to text file: "+e1.getMessage());
+				if(hasNoTerms()) {
+					CommonDialogs.showError("You currently have no terms in your list.", "No Terms");
+				} else {
+					File textFile = CommonDialogs.saveFileDialog("C:\\", "Text File (*.txt)", "txt", "Save Query");
+					if(textFile != null) {
+						try(SimpleTextFileWriter sw = new SimpleTextFileWriter(textFile)){
+							sw.writeLine(buildQuery());
+						} catch (IOException e1) {
+							CommonDialogs.showError("Error saving query to text file: "+e1.getMessage());
+						}
 					}
 				}
 			}
@@ -120,12 +133,16 @@ public class TermCollectionTable extends JPanel {
 		JButton btnCopyTerms = new JButton("Copy Terms");
 		btnCopyTerms.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				StringJoiner termList = new StringJoiner("\n");
-				for(String term : model.getTerms()) {
-					termList.add(term);
+				if(hasNoTerms()) {
+					CommonDialogs.showError("You currently have no terms in your list.", "No Terms");
+				} else {
+					StringJoiner termList = new StringJoiner("\n");
+					for(String term : model.getTerms()) {
+						termList.add(term);
+					}
+					StringSelection termListString = new StringSelection(termList.toString());
+					Toolkit.getDefaultToolkit().getSystemClipboard().setContents(termListString, null);
 				}
-				StringSelection termListString = new StringSelection(termList.toString());
-				Toolkit.getDefaultToolkit().getSystemClipboard().setContents(termListString, null);
 			}
 		});
 		btnCopyTerms.setIcon(new ImageIcon(TermCollectionTable.class.getResource("/com/nuix/termexplorer/page_white_copy.png")));
@@ -134,14 +151,18 @@ public class TermCollectionTable extends JPanel {
 		JButton btnSaveTerms = new JButton("Save Terms");
 		btnSaveTerms.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				File textFile = CommonDialogs.saveFileDialog("C:\\", "Text File (*.txt)", "txt", "Save Term List");
-				if(textFile != null) {
-					try(SimpleTextFileWriter sw = new SimpleTextFileWriter(textFile)){
-						for(String term : model.getTerms()) {
-							sw.writeLine(term);
+				if(hasNoTerms()) {
+					CommonDialogs.showError("You currently have no terms in your list.", "No Terms");
+				} else {
+					File textFile = CommonDialogs.saveFileDialog("C:\\", "Text File (*.txt)", "txt", "Save Term List");
+					if(textFile != null) {
+						try(SimpleTextFileWriter sw = new SimpleTextFileWriter(textFile)){
+							for(String term : model.getTerms()) {
+								sw.writeLine(term);
+							}
+						} catch (IOException e1) {
+							CommonDialogs.showError("Error saving terms to text file: "+e1.getMessage());
 						}
-					} catch (IOException e1) {
-						CommonDialogs.showError("Error saving terms to text file: "+e1.getMessage());
 					}
 				}
 			}
@@ -156,8 +177,11 @@ public class TermCollectionTable extends JPanel {
 		JButton btnRemoveSelected = new JButton("Remove Selected");
 		btnRemoveSelected.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				int[] selectedRows = table.getSelectedRows();
-				model.removeTerms(selectedRows);
+				if(!hasNoTerms()) {
+					int[] selectedRows = table.getSelectedRows();
+					model.removeTerms(selectedRows);
+					lblTermCount.setText("Term Count: "+model.getTermCount());
+				}
 			}
 		});
 		toolBar_1.add(btnRemoveSelected);
@@ -167,6 +191,7 @@ public class TermCollectionTable extends JPanel {
 		btnRemoveAll.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				model.clear();
+				lblTermCount.setText("Term Count: "+model.getTermCount());
 			}
 		});
 		toolBar_1.add(btnRemoveAll);
@@ -175,6 +200,7 @@ public class TermCollectionTable extends JPanel {
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		GridBagConstraints gbc_scrollPane = new GridBagConstraints();
+		gbc_scrollPane.insets = new Insets(0, 0, 5, 0);
 		gbc_scrollPane.fill = GridBagConstraints.BOTH;
 		gbc_scrollPane.gridx = 0;
 		gbc_scrollPane.gridy = 2;
@@ -183,15 +209,27 @@ public class TermCollectionTable extends JPanel {
 		table = new JTable(model);
 		table.setFillsViewportHeight(true);
 		scrollPane.setViewportView(table);
-
+		
+		lblTermCount = new JLabel("Term Count: 0");
+		GridBagConstraints gbc_lblTermCount = new GridBagConstraints();
+		gbc_lblTermCount.anchor = GridBagConstraints.WEST;
+		gbc_lblTermCount.gridx = 0;
+		gbc_lblTermCount.gridy = 3;
+		add(lblTermCount, gbc_lblTermCount);
 	}
 
 	public void addTerm(String term) {
 		model.addTerm(term);
+		lblTermCount.setText("Term Count: "+model.getTermCount());
 	}
 
 	public void addTerms(Collection<String> terms) {
 		model.addTerms(terms);
+		lblTermCount.setText("Term Count: "+model.getTermCount());
+	}
+	
+	public boolean hasNoTerms() {
+		return model.getTermCount() == 0;
 	}
 
 	public String buildQuery() {

@@ -54,6 +54,10 @@ public class TermCollectionTableModel extends DefaultTableModel {
 		return result;
 	}
 	
+	public int getTermCount() {
+		return terms.size();
+	}
+	
 	public void removeTerms(int[] rowIndices) {
 		for (int r = 0; r < rowIndices.length; r++) {
 			String term = terms.get(r);
@@ -66,6 +70,7 @@ public class TermCollectionTableModel extends DefaultTableModel {
 	public void addTerm(String term) {
 		if(!distinctTerms.contains(term)) {
 			terms.add(term);
+			distinctTerms.add(term);
 			int newRowIndex = terms.size()-1;
 			this.fireTableRowsInserted(newRowIndex, newRowIndex);
 		}
