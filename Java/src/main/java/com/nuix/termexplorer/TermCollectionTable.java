@@ -1,39 +1,37 @@
 package com.nuix.termexplorer;
 
-import javax.swing.JPanel;
-import java.awt.GridBagLayout;
-import javax.swing.JToolBar;
+import java.awt.BorderLayout;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
-import javax.swing.JScrollPane;
+import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringJoiner;
 
-import javax.swing.ScrollPaneConstants;
-import javax.swing.JTable;
-import javax.swing.JButton;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
-import javax.swing.JSeparator;
-import javax.swing.SwingConstants;
-import javax.swing.border.EmptyBorder;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JToolBar;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.border.TitledBorder;
 
 import com.nuix.superutilities.loadfiles.SimpleTextFileWriter;
 import com.nuix.superutilities.query.QueryHelper;
 
 import nuix.Window;
-
-import javax.swing.JLabel;
-import javax.swing.JComboBox;
-import javax.swing.DefaultComboBoxModel;
-import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.IOException;
-import java.awt.event.ActionEvent;
-import java.awt.Font;
 
 @SuppressWarnings("serial")
 public class TermCollectionTable extends JPanel {
@@ -44,22 +42,29 @@ public class TermCollectionTable extends JPanel {
 	
 	public TermCollectionTable(Window nuixWindow) {
 		GridBagLayout gridBagLayout = new GridBagLayout();
-		gridBagLayout.columnWidths = new int[]{0, 0};
-		gridBagLayout.rowHeights = new int[]{0, 0, 0, 0, 0};
-		gridBagLayout.columnWeights = new double[]{1.0, Double.MIN_VALUE};
-		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
+		gridBagLayout.columnWidths = new int[]{0, 0, 0, 0, 0};
+		gridBagLayout.rowHeights = new int[]{0, 0, 0, 0};
+		gridBagLayout.columnWeights = new double[]{0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
+		gridBagLayout.rowWeights = new double[]{0.0, 1.0, 0.0, Double.MIN_VALUE};
 		setLayout(gridBagLayout);
 		
-		JToolBar toolBar = new JToolBar();
-		toolBar.setFloatable(false);
-		GridBagConstraints gbc_toolBar = new GridBagConstraints();
-		gbc_toolBar.anchor = GridBagConstraints.WEST;
-		gbc_toolBar.insets = new Insets(0, 0, 5, 0);
-		gbc_toolBar.gridx = 0;
-		gbc_toolBar.gridy = 0;
-		add(toolBar, gbc_toolBar);
+		JPanel panel = new JPanel();
+		panel.setBorder(new TitledBorder(null, "Query", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		GridBagConstraints gbc_panel = new GridBagConstraints();
+		gbc_panel.insets = new Insets(0, 0, 5, 5);
+		gbc_panel.fill = GridBagConstraints.BOTH;
+		gbc_panel.gridx = 0;
+		gbc_panel.gridy = 0;
+		add(panel, gbc_panel);
+		panel.setLayout(new BorderLayout(0, 0));
 		
-		JButton btnSearch = new JButton("Execute Query");
+		JToolBar toolBar_1 = new JToolBar();
+		toolBar_1.setFloatable(false);
+		panel.add(toolBar_1);
+		
+		JButton btnSearch = new JButton("");
+		toolBar_1.add(btnSearch);
+		btnSearch.setToolTipText("Execute Query");
 		btnSearch.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(hasNoTerms()) {
@@ -72,9 +77,10 @@ public class TermCollectionTable extends JPanel {
 			}
 		});
 		btnSearch.setIcon(new ImageIcon(TermCollectionTable.class.getResource("/com/nuix/termexplorer/magnifier.png")));
-		toolBar.add(btnSearch);
 		
-		JButton btnCopyQuery = new JButton("Copy Query");
+		JButton btnCopyQuery = new JButton("");
+		toolBar_1.add(btnCopyQuery);
+		btnCopyQuery.setToolTipText("Copy Query");
 		btnCopyQuery.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(hasNoTerms()) {
@@ -86,9 +92,10 @@ public class TermCollectionTable extends JPanel {
 			}
 		});
 		btnCopyQuery.setIcon(new ImageIcon(TermCollectionTable.class.getResource("/com/nuix/termexplorer/page_copy.png")));
-		toolBar.add(btnCopyQuery);
 		
-		JButton btnSaveQuery = new JButton("Save Query");
+		JButton btnSaveQuery = new JButton("");
+		toolBar_1.add(btnSaveQuery);
+		btnSaveQuery.setToolTipText("Save Query");
 		btnSaveQuery.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(hasNoTerms()) {
@@ -106,31 +113,30 @@ public class TermCollectionTable extends JPanel {
 			}
 		});
 		btnSaveQuery.setIcon(new ImageIcon(TermCollectionTable.class.getResource("/com/nuix/termexplorer/page_save.png")));
-		toolBar.add(btnSaveQuery);
-		
-		JSeparator separator = new JSeparator();
-		separator.setOrientation(SwingConstants.VERTICAL);
-		toolBar.add(separator);
-		
-		JLabel lblTermOperator = new JLabel("Query Type:");
-		lblTermOperator.setBorder(new EmptyBorder(0, 10, 0, 5));
-		toolBar.add(lblTermOperator);
 		
 		termOperator = new JComboBox<String>();
+		termOperator.setToolTipText("Query Type");
+		toolBar_1.add(termOperator);
 		termOperator.setFont(new Font("Consolas", Font.PLAIN, 11));
 		termOperator.setModel(new DefaultComboBoxModel<String>(new String[] {"a OR b OR c", "a AND b AND c", "NOT (a OR b OR c)"}));
-		toolBar.add(termOperator);
 		
-		JToolBar toolBar_1 = new JToolBar();
-		toolBar_1.setFloatable(false);
-		GridBagConstraints gbc_toolBar_1 = new GridBagConstraints();
-		gbc_toolBar_1.anchor = GridBagConstraints.WEST;
-		gbc_toolBar_1.insets = new Insets(0, 0, 5, 0);
-		gbc_toolBar_1.gridx = 0;
-		gbc_toolBar_1.gridy = 1;
-		add(toolBar_1, gbc_toolBar_1);
+		JPanel panel_1 = new JPanel();
+		panel_1.setBorder(new TitledBorder(null, "Terms", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		GridBagConstraints gbc_panel_1 = new GridBagConstraints();
+		gbc_panel_1.insets = new Insets(0, 0, 5, 5);
+		gbc_panel_1.fill = GridBagConstraints.BOTH;
+		gbc_panel_1.gridx = 1;
+		gbc_panel_1.gridy = 0;
+		add(panel_1, gbc_panel_1);
+		panel_1.setLayout(new BorderLayout(0, 0));
 		
-		JButton btnCopyTerms = new JButton("Copy Terms");
+		JToolBar toolBar_2 = new JToolBar();
+		toolBar_2.setFloatable(false);
+		panel_1.add(toolBar_2, BorderLayout.CENTER);
+		
+		JButton btnCopyTerms = new JButton("");
+		toolBar_2.add(btnCopyTerms);
+		btnCopyTerms.setToolTipText("Copy Terms");
 		btnCopyTerms.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(hasNoTerms()) {
@@ -146,9 +152,10 @@ public class TermCollectionTable extends JPanel {
 			}
 		});
 		btnCopyTerms.setIcon(new ImageIcon(TermCollectionTable.class.getResource("/com/nuix/termexplorer/page_white_copy.png")));
-		toolBar_1.add(btnCopyTerms);
 		
-		JButton btnSaveTerms = new JButton("Save Terms");
+		JButton btnSaveTerms = new JButton("");
+		toolBar_2.add(btnSaveTerms);
+		btnSaveTerms.setToolTipText("Save Terms");
 		btnSaveTerms.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(hasNoTerms()) {
@@ -168,42 +175,63 @@ public class TermCollectionTable extends JPanel {
 			}
 		});
 		btnSaveTerms.setIcon(new ImageIcon(TermCollectionTable.class.getResource("/com/nuix/termexplorer/table_save.png")));
-		toolBar_1.add(btnSaveTerms);
 		
-		JSeparator separator_1 = new JSeparator();
-		separator_1.setOrientation(SwingConstants.VERTICAL);
-		toolBar_1.add(separator_1);
+		JPanel panel_2 = new JPanel();
+		panel_2.setBorder(new TitledBorder(null, "Removal", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		GridBagConstraints gbc_panel_2 = new GridBagConstraints();
+		gbc_panel_2.insets = new Insets(0, 0, 5, 5);
+		gbc_panel_2.fill = GridBagConstraints.BOTH;
+		gbc_panel_2.gridx = 2;
+		gbc_panel_2.gridy = 0;
+		add(panel_2, gbc_panel_2);
+		panel_2.setLayout(new BorderLayout(0, 0));
 		
-		JButton btnRemoveSelected = new JButton("Remove Selected");
+		JToolBar toolBar_3 = new JToolBar();
+		toolBar_3.setFloatable(false);
+		panel_2.add(toolBar_3, BorderLayout.CENTER);
+		
+		JButton btnRemoveSelected = new JButton("");
+		toolBar_3.add(btnRemoveSelected);
+		btnRemoveSelected.setToolTipText("Remove Selected");
 		btnRemoveSelected.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if(!hasNoTerms()) {
+				if(hasTerms()) {
 					int[] selectedRows = table.getSelectedRows();
-					model.removeTerms(selectedRows);
-					lblTermCount.setText("Term Count: "+model.getTermCount());
+					if(selectedRows.length > 0) {
+						String message = String.format("Removed selected %s terms?",selectedRows.length);
+						if(CommonDialogs.getConfirmation(message, "Remove Selected Terms?")) {
+							model.removeTerms(selectedRows);
+							lblTermCount.setText("Term Count: "+model.getTermCount());
+						}	
+					}
 				}
 			}
 		});
-		toolBar_1.add(btnRemoveSelected);
 		btnRemoveSelected.setIcon(new ImageIcon(TermCollectionTable.class.getResource("/com/nuix/termexplorer/table_row_delete.png")));
 		
-		JButton btnRemoveAll = new JButton("Remove All");
+		JButton btnRemoveAll = new JButton("");
+		toolBar_3.add(btnRemoveAll);
+		btnRemoveAll.setToolTipText("Remove All");
 		btnRemoveAll.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				model.clear();
-				lblTermCount.setText("Term Count: "+model.getTermCount());
+				if(hasTerms()) {
+					if(CommonDialogs.getConfirmation("Remove all terms?", "Remove All Terms?")) {
+						model.clear();
+						lblTermCount.setText("Term Count: "+model.getTermCount());	
+					}
+				}
 			}
 		});
-		toolBar_1.add(btnRemoveAll);
 		btnRemoveAll.setIcon(new ImageIcon(TermCollectionTable.class.getResource("/com/nuix/termexplorer/bin_closed.png")));
 		
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		GridBagConstraints gbc_scrollPane = new GridBagConstraints();
+		gbc_scrollPane.gridwidth = 4;
 		gbc_scrollPane.insets = new Insets(0, 0, 5, 0);
 		gbc_scrollPane.fill = GridBagConstraints.BOTH;
 		gbc_scrollPane.gridx = 0;
-		gbc_scrollPane.gridy = 2;
+		gbc_scrollPane.gridy = 1;
 		add(scrollPane, gbc_scrollPane);
 		
 		table = new JTable(model);
@@ -212,9 +240,10 @@ public class TermCollectionTable extends JPanel {
 		
 		lblTermCount = new JLabel("Term Count: 0");
 		GridBagConstraints gbc_lblTermCount = new GridBagConstraints();
+		gbc_lblTermCount.insets = new Insets(0, 0, 0, 5);
 		gbc_lblTermCount.anchor = GridBagConstraints.WEST;
 		gbc_lblTermCount.gridx = 0;
-		gbc_lblTermCount.gridy = 3;
+		gbc_lblTermCount.gridy = 2;
 		add(lblTermCount, gbc_lblTermCount);
 	}
 
@@ -230,6 +259,10 @@ public class TermCollectionTable extends JPanel {
 	
 	public boolean hasNoTerms() {
 		return model.getTermCount() == 0;
+	}
+	
+	public boolean hasTerms() {
+		return model.getTermCount() > 0;
 	}
 
 	public String buildQuery() {

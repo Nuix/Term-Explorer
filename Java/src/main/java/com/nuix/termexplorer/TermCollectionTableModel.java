@@ -1,7 +1,9 @@
 package com.nuix.termexplorer;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -59,11 +61,13 @@ public class TermCollectionTableModel extends DefaultTableModel {
 	}
 	
 	public void removeTerms(int[] rowIndices) {
-		for (int r = 0; r < rowIndices.length; r++) {
-			String term = terms.get(r);
+		Arrays.sort(rowIndices);
+		for (int r = rowIndices.length-1; r >= 0 ; r--) {
+			int rowIndex = rowIndices[r];
+			String term = terms.get(rowIndex);
 			distinctTerms.remove(term);
-			terms.remove(r);
-			this.fireTableRowsDeleted(r, r);
+			terms.remove(rowIndex);
+			this.fireTableRowsDeleted(rowIndex, rowIndex);
 		}
 	}
 	
@@ -71,14 +75,19 @@ public class TermCollectionTableModel extends DefaultTableModel {
 		if(!distinctTerms.contains(term)) {
 			terms.add(term);
 			distinctTerms.add(term);
-			int newRowIndex = terms.size()-1;
-			this.fireTableRowsInserted(newRowIndex, newRowIndex);
 		}
+		Collections.sort(terms);
+		this.fireTableDataChanged();
 	}
 	
 	public void addTerms(Collection<String> terms) {
 		for(String term : terms) {
-			addTerm(term);
+			if(!distinctTerms.contains(term)) {
+				terms.add(term);
+				distinctTerms.add(term);
+			}
 		}
+		Collections.sort(this.terms);
+		this.fireTableDataChanged();
 	}
 }

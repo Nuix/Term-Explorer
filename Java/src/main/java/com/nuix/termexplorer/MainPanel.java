@@ -157,6 +157,7 @@ public class MainPanel extends JPanel {
 		txtScopequery.setColumns(10);
 		
 		expansionProgressBar = new JProgressBar();
+		expansionProgressBar.setStringPainted(true);
 		GridBagConstraints gbc_expansionProgressBar = new GridBagConstraints();
 		gbc_expansionProgressBar.fill = GridBagConstraints.BOTH;
 		gbc_expansionProgressBar.gridwidth = 8;

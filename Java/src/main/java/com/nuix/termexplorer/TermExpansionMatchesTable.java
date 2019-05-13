@@ -18,6 +18,8 @@ import javax.swing.ImageIcon;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JLabel;
+import javax.swing.border.TitledBorder;
+import java.awt.BorderLayout;
 
 @SuppressWarnings("serial")
 public class TermExpansionMatchesTable extends JPanel {
@@ -28,22 +30,28 @@ public class TermExpansionMatchesTable extends JPanel {
 	
 	public TermExpansionMatchesTable() {
 		GridBagLayout gridBagLayout = new GridBagLayout();
-		gridBagLayout.columnWidths = new int[]{0, 0};
+		gridBagLayout.columnWidths = new int[]{110, 0, 0};
 		gridBagLayout.rowHeights = new int[]{0, 0, 0, 0};
-		gridBagLayout.columnWeights = new double[]{1.0, Double.MIN_VALUE};
+		gridBagLayout.columnWeights = new double[]{0.0, 1.0, Double.MIN_VALUE};
 		gridBagLayout.rowWeights = new double[]{0.0, 1.0, 0.0, Double.MIN_VALUE};
 		setLayout(gridBagLayout);
 		
-		JToolBar toolBar = new JToolBar();
-		toolBar.setFloatable(false);
-		GridBagConstraints gbc_toolBar = new GridBagConstraints();
-		gbc_toolBar.insets = new Insets(0, 0, 5, 0);
-		gbc_toolBar.fill = GridBagConstraints.HORIZONTAL;
-		gbc_toolBar.gridx = 0;
-		gbc_toolBar.gridy = 0;
-		add(toolBar, gbc_toolBar);
+		JPanel panel = new JPanel();
+		panel.setBorder(new TitledBorder(null, "Add to Collection", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		GridBagConstraints gbc_panel = new GridBagConstraints();
+		gbc_panel.insets = new Insets(0, 0, 5, 5);
+		gbc_panel.fill = GridBagConstraints.BOTH;
+		gbc_panel.gridx = 0;
+		gbc_panel.gridy = 0;
+		add(panel, gbc_panel);
+		panel.setLayout(new BorderLayout(0, 0));
 		
-		JButton btnAddToCollection = new JButton("Add Selected to Collection");
+		JToolBar toolBar = new JToolBar();
+		panel.add(toolBar, BorderLayout.CENTER);
+		toolBar.setFloatable(false);
+		
+		JButton btnAddToCollection = new JButton("");
+		btnAddToCollection.setToolTipText("Add Selected to Collection");
 		btnAddToCollection.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(sendToCollectionCallback != null) {
@@ -52,22 +60,24 @@ public class TermExpansionMatchesTable extends JPanel {
 				}
 			}
 		});
-		btnAddToCollection.setIcon(new ImageIcon(TermExpansionMatchesTable.class.getResource("/com/nuix/termexplorer/arrow_right.png")));
+		btnAddToCollection.setIcon(new ImageIcon(TermExpansionMatchesTable.class.getResource("/com/nuix/termexplorer/control_play_blue.png")));
 		toolBar.add(btnAddToCollection);
 		
-		JButton btnAddAllTo = new JButton("Add All to Collection");
+		JButton btnAddAllTo = new JButton("");
+		btnAddAllTo.setToolTipText("Add All to Collection");
 		btnAddAllTo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				sendToCollectionCallback.accept(model.getRecords());
 			}
 		});
-		btnAddAllTo.setIcon(new ImageIcon(TermExpansionMatchesTable.class.getResource("/com/nuix/termexplorer/arrow_right.png")));
+		btnAddAllTo.setIcon(new ImageIcon(TermExpansionMatchesTable.class.getResource("/com/nuix/termexplorer/control_fastforward_blue.png")));
 		toolBar.add(btnAddAllTo);
 		
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		GridBagConstraints gbc_scrollPane = new GridBagConstraints();
-		gbc_scrollPane.insets = new Insets(0, 0, 5, 0);
+		gbc_scrollPane.gridwidth = 2;
+		gbc_scrollPane.insets = new Insets(0, 0, 5, 5);
 		gbc_scrollPane.fill = GridBagConstraints.BOTH;
 		gbc_scrollPane.gridx = 0;
 		gbc_scrollPane.gridy = 1;
@@ -79,6 +89,7 @@ public class TermExpansionMatchesTable extends JPanel {
 		
 		lblTermCount = new JLabel("Term Count: 0");
 		GridBagConstraints gbc_lblTermCount = new GridBagConstraints();
+		gbc_lblTermCount.insets = new Insets(0, 0, 0, 5);
 		gbc_lblTermCount.anchor = GridBagConstraints.WEST;
 		gbc_lblTermCount.gridx = 0;
 		gbc_lblTermCount.gridy = 2;
