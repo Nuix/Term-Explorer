@@ -118,7 +118,7 @@ public class TermCollectionTable extends JPanel {
 		termOperator.setToolTipText("Query Type");
 		toolBar_1.add(termOperator);
 		termOperator.setFont(new Font("Consolas", Font.PLAIN, 11));
-		termOperator.setModel(new DefaultComboBoxModel<String>(new String[] {"a OR b OR c", "a AND b AND c", "NOT (a OR b OR c)"}));
+		termOperator.setModel(new DefaultComboBoxModel<String>(new String[] {"a OR b OR c", "a AND b AND c", "NOT (a OR b OR c)", "content:(a OR b OR c)", "properties:(a OR b OR c)", "content:(a OR b) OR properties(a OR B)", "NOT content:(a OR b OR c)", "NOT properties:(a OR b OR c)", "NOT (content:(a OR b) OR properties(a OR B))"}));
 		
 		JPanel panel_1 = new JPanel();
 		panel_1.setBorder(new TitledBorder(null, "Terms", TitledBorder.LEADING, TitledBorder.TOP, null, null));
@@ -266,17 +266,46 @@ public class TermCollectionTable extends JPanel {
 	}
 
 	public String buildQuery() {
+//		0: a OR b OR c
+//		1: a AND b AND c
+//		2: NOT (a OR b OR c)
+//		3: content:(a OR b OR c)
+//		4: properties:(a OR b OR c)
+//		5: content:(a OR b) OR properties(a OR B)
+//		6: NOT content:(a OR b OR c)
+//		7: NOT properties:(a OR b OR c)
+//		8: NOT (content:(a OR b) OR properties(a OR B))
 		String query = "";
-		int opIndex = termOperator.getSelectedIndex(); 
-		if(opIndex == 0) {
-			// ORed query
-			query = QueryHelper.joinByOr(model.getTerms());
-		} else if(opIndex == 1) {
-			//ANDed query
+		String termsORed = QueryHelper.joinByOr(model.getTerms());
+		int opIndex = termOperator.getSelectedIndex();
+		switch(opIndex) {
+		case 0:
+			query = termsORed;
+			break;
+		case 1:
 			query = QueryHelper.joinByAnd(model.getTerms());
-		} else {
-			//NOT/OR
+			break;
+		case 2:
 			query = QueryHelper.notJoinByOr(model.getTerms());
+			break;
+		case 3:
+			query = String.format("content:(%s)", QueryHelper.joinByOr(model.getTerms()));
+			break;
+		case 4:
+			query = String.format("properties:(%s)", QueryHelper.joinByOr(model.getTerms()));
+			break;
+		case 5:
+			query = String.format("content:(%s) OR properties:(%s)", termsORed, termsORed);
+			break;
+		case 6:
+			query = String.format("NOT content:(%s)", QueryHelper.joinByOr(model.getTerms()));
+			break;
+		case 7:
+			query = String.format("NOT properties:(%s)", QueryHelper.joinByOr(model.getTerms()));
+			break;
+		case 8:
+			query = String.format("NOT (content:(%s) OR properties:(%s))", termsORed, termsORed);
+			break;
 		}
 		return query;
 	}
