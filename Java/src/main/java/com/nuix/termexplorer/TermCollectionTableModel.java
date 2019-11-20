@@ -83,7 +83,7 @@ public class TermCollectionTableModel extends DefaultTableModel {
 	public void addTerms(Collection<String> terms) {
 		for(String term : terms) {
 			if(!distinctTerms.contains(term)) {
-				terms.add(term);
+				this.terms.add(term);
 				distinctTerms.add(term);
 			}
 		}

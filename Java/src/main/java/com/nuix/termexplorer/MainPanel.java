@@ -6,6 +6,7 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
@@ -125,7 +126,7 @@ public class MainPanel extends JPanel {
 		expressionsPanel.add(lblFuzzyType, gbc_lblFuzzyType);
 		
 		comboFuzzyType = new JComboBox<String>();
-		comboFuzzyType.setModel(new DefaultComboBoxModel<String>(new String[] {"Nuix", "Levenstein", "Lucene Levenshstein", "NGram"}));
+		comboFuzzyType.setModel(new DefaultComboBoxModel<String>(new String[] {"Nuix", "LuceneLevenshstein", "JaroWinkler", "NGram"}));
 		GridBagConstraints gbc_comboFuzzyType = new GridBagConstraints();
 		gbc_comboFuzzyType.insets = new Insets(0, 0, 5, 5);
 		gbc_comboFuzzyType.fill = GridBagConstraints.HORIZONTAL;
@@ -182,9 +183,11 @@ public class MainPanel extends JPanel {
 		add(termCollectionTable, gbc_termCollectionTable);
 		
 		termExpansionMatchesTable.onSendToCollection((matchedTerms) -> {
-			for(ExpandedTermInfo matchedTerm : matchedTerms) {
-				termCollectionTable.addTerm(matchedTerm.getMatchedTerm());
-			}
+			List<String> terms = matchedTerms.stream().map(mt -> mt.getMatchedTerm()).collect(Collectors.toList());
+			termCollectionTable.addTerms(terms);
+//			for(ExpandedTermInfo matchedTerm : matchedTerms) {
+//				termCollectionTable.addTerm(matchedTerm.getMatchedTerm());
+//			}
 		});
 	}
 	
@@ -200,11 +203,10 @@ public class MainPanel extends JPanel {
 						te.setFuzzyResolutionAlgorithm(SimilarityCalculation.Nuix);
 						break;
 					case 1:
-						te.setFuzzyResolutionAlgorithm(SimilarityCalculation.Levenstein);
-						break;
-					case 2:
 						te.setFuzzyResolutionAlgorithm(SimilarityCalculation.LuceneLevenshstein);
 						break;
+					case 2:
+						te.setFuzzyResolutionAlgorithm(SimilarityCalculation.JaroWinkler);
 					case 3:
 						te.setFuzzyResolutionAlgorithm(SimilarityCalculation.NGram);
 						break;
