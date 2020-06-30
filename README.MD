@@ -11,7 +11,7 @@ View the GitHub project [here](https://github.com/Nuix/Term-Explorer) or downloa
 
 Use this script to help you explore the terms present in a Nuix case.
 
-![image](https://user-images.githubusercontent.com/11775738/57660919-8993f080-759d-11e9-8063-4bdd967be558.png)
+![image](https://user-images.githubusercontent.com/11775738/86159058-95eb4d80-babe-11ea-9ae0-f7151df690a4.png)
 
 Begin by providing one or more *single term wild card expressions* and/or fuzzy expressions.  Separate multiple expressions with spaces.  The provided expressions are then used to find related terms present in the current Nuix case.
 
