@@ -32,6 +32,8 @@ import com.nuix.superutilities.loadfiles.SimpleTextFileWriter;
 import com.nuix.superutilities.query.QueryHelper;
 
 import nuix.Window;
+import javax.swing.border.EtchedBorder;
+import java.awt.Color;
 
 @SuppressWarnings("serial")
 public class TermCollectionTable extends JPanel {
@@ -62,7 +64,7 @@ public class TermCollectionTable extends JPanel {
 		toolBar_1.setFloatable(false);
 		panel.add(toolBar_1);
 		
-		JButton btnSearch = new JButton("");
+		JButton btnSearch = new JButton("Search");
 		toolBar_1.add(btnSearch);
 		btnSearch.setToolTipText("Execute Query");
 		btnSearch.addActionListener(new ActionListener() {
@@ -78,7 +80,7 @@ public class TermCollectionTable extends JPanel {
 		});
 		btnSearch.setIcon(new ImageIcon(TermCollectionTable.class.getResource("/com/nuix/termexplorer/magnifier.png")));
 		
-		JButton btnCopyQuery = new JButton("");
+		JButton btnCopyQuery = new JButton("Copy");
 		toolBar_1.add(btnCopyQuery);
 		btnCopyQuery.setToolTipText("Copy Query");
 		btnCopyQuery.addActionListener(new ActionListener() {
@@ -93,7 +95,7 @@ public class TermCollectionTable extends JPanel {
 		});
 		btnCopyQuery.setIcon(new ImageIcon(TermCollectionTable.class.getResource("/com/nuix/termexplorer/page_copy.png")));
 		
-		JButton btnSaveQuery = new JButton("");
+		JButton btnSaveQuery = new JButton("Save");
 		toolBar_1.add(btnSaveQuery);
 		btnSaveQuery.setToolTipText("Save Query");
 		btnSaveQuery.addActionListener(new ActionListener() {
@@ -134,7 +136,7 @@ public class TermCollectionTable extends JPanel {
 		toolBar_2.setFloatable(false);
 		panel_1.add(toolBar_2, BorderLayout.CENTER);
 		
-		JButton btnCopyTerms = new JButton("");
+		JButton btnCopyTerms = new JButton("Copy");
 		toolBar_2.add(btnCopyTerms);
 		btnCopyTerms.setToolTipText("Copy Terms");
 		btnCopyTerms.addActionListener(new ActionListener() {
@@ -153,7 +155,7 @@ public class TermCollectionTable extends JPanel {
 		});
 		btnCopyTerms.setIcon(new ImageIcon(TermCollectionTable.class.getResource("/com/nuix/termexplorer/page_white_copy.png")));
 		
-		JButton btnSaveTerms = new JButton("");
+		JButton btnSaveTerms = new JButton("Save");
 		toolBar_2.add(btnSaveTerms);
 		btnSaveTerms.setToolTipText("Save Terms");
 		btnSaveTerms.addActionListener(new ActionListener() {
@@ -177,7 +179,7 @@ public class TermCollectionTable extends JPanel {
 		btnSaveTerms.setIcon(new ImageIcon(TermCollectionTable.class.getResource("/com/nuix/termexplorer/table_save.png")));
 		
 		JPanel panel_2 = new JPanel();
-		panel_2.setBorder(new TitledBorder(null, "Removal", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panel_2.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, new Color(255, 255, 255), new Color(160, 160, 160)), "Remove", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
 		GridBagConstraints gbc_panel_2 = new GridBagConstraints();
 		gbc_panel_2.insets = new Insets(0, 0, 5, 5);
 		gbc_panel_2.fill = GridBagConstraints.BOTH;
@@ -190,7 +192,7 @@ public class TermCollectionTable extends JPanel {
 		toolBar_3.setFloatable(false);
 		panel_2.add(toolBar_3, BorderLayout.CENTER);
 		
-		JButton btnRemoveSelected = new JButton("");
+		JButton btnRemoveSelected = new JButton("Selected");
 		toolBar_3.add(btnRemoveSelected);
 		btnRemoveSelected.setToolTipText("Remove Selected");
 		btnRemoveSelected.addActionListener(new ActionListener() {
@@ -209,7 +211,7 @@ public class TermCollectionTable extends JPanel {
 		});
 		btnRemoveSelected.setIcon(new ImageIcon(TermCollectionTable.class.getResource("/com/nuix/termexplorer/table_row_delete.png")));
 		
-		JButton btnRemoveAll = new JButton("");
+		JButton btnRemoveAll = new JButton("All");
 		toolBar_3.add(btnRemoveAll);
 		btnRemoveAll.setToolTipText("Remove All");
 		btnRemoveAll.addActionListener(new ActionListener() {
