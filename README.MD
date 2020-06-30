@@ -1,7 +1,7 @@
 Term Explorer
 =============
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0) ![This script was last tested in Nuix 7.8](https://img.shields.io/badge/Script%20Tested%20in%20Nuix-7.8-green.svg)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0) ![This script was last tested in Nuix 8.6](https://img.shields.io/badge/Script%20Tested%20in%20Nuix-8.6-green.svg)
 
 View the GitHub project [here](https://github.com/Nuix/Term-Explorer) or download the latest release [here](https://github.com/Nuix/Term-Explorer/releases).
 
@@ -13,7 +13,7 @@ Use this script to help you explore the terms present in a Nuix case.
 
 ![image](https://user-images.githubusercontent.com/11775738/57660919-8993f080-759d-11e9-8063-4bdd967be558.png)
 
-Begin by providing a single term wild card expression or a fuzzy expression.  The provided expression is then used to find related terms present in the current Nuix case.
+Begin by providing one or more *single term wild card expressions* and/or fuzzy expressions.  Separate multiple expressions with spaces.  The provided expressions are then used to find related terms present in the current Nuix case.
 
 Wild card expressions support `*` (0 or more characters) or `?` (1 character).
 
@@ -34,10 +34,12 @@ Fuzzy terms expressions take the form `TERM~SIMILARITY`, with `SIMILARITY` being
 | `jason~0.8` | `jadon`, `jaron`, `jasen`, `jason`, `javon`, `jayson`, `mason`                                                                 |
 
 Fuzzy similarity can be calculated using several difference methods:
-- **Nuix**: Determines what terms Nuix resolved the given fuzzy search term to.  Running the given fuzzy query expression in the Nuix search bar is expected to return the same results as when you take the matched terms found by this script and join them into an OR query (i.e. `jadon OR jaron OR jasen OR javon OR ...` == `jason~0.8`).  Note that this approach most accurately represents how Nuix would resolve the given fuzzy search to terms, but also takes longer as it is not resolved directly against the case term list, but the responsive items themselves.  That means the more items responsive to the given fuzzy search, the longer this approach can take to resolve!
+- **Nuix**: Determines what terms Nuix resolved the given fuzzy search term to.  Running the given fuzzy query expression in the Nuix search bar is expected to return the same results as when you take the matched terms found by this script and join them into an OR query (i.e. `jadon OR jaron OR jasen OR javon OR ...` == `jason~0.8`).  Note that this approach most accurately represents how Nuix would resolve the given fuzzy search to terms, but also takes longer because it is resolved against each responsive item individually.  That means the more items responsive to the given fuzzy search, the longer this approach can take to resolve!
 - **[Levenstein Distance](https://lucene.apache.org/core/6_6_0/suggest/org/apache/lucene/search/spell/LevensteinDistance.html)** - Uses Lucene's built in Levenshstein distance string comparison to filter provided fuzzy term against case terms list.  [Levenshstein distance](https://en.wikipedia.org/wiki/Levenshtein_distance) compares 2 strings by determining the number of edits (insertions, deletions and substitutions) needed to change one string to the other.  The Lucene method scales the resulting edit distance to a range between `0.0` and `1.0`.  The script resolves this type of fuzzy search against the case terms list.
 - **[Jaro-Winkler](https://en.wikipedia.org/wiki/Jaro%E2%80%93Winkler_distance)** - Uses Lucene's built in Jaro-Winkler string comparison method.
 - **[NGram Distance](https://lucene.apache.org/core/6_6_0/suggest/org/apache/lucene/search/spell/NGramDistance.html)** - Uses Lucene's built in [NGram distance](https://webdocs.cs.ualberta.ca/~kondrak/papers/spire05.pdf) string comparison method.  The script resolves this type of fuzzy search against the case terms list.
+
+Resulting matched terms can be exported to a CSV or added to a running collection of terms you build up (the right hand table).  This collection of terms you have selected can then be used in different ways including generating a query from the terms or saving them to a file.
 
 # Getting Started
 
@@ -59,7 +61,7 @@ The other JAR file is `SuperUtilities.jar` which includes the class [TermExpande
 # License
 
 ```
-Copyright 2019 Nuix
+Copyright 2020 Nuix
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
