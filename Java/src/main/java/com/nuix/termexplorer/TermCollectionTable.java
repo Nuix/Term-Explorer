@@ -1,6 +1,8 @@
 package com.nuix.termexplorer;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -16,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.StringJoiner;
 
+import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -26,14 +29,13 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 
 import com.nuix.superutilities.loadfiles.SimpleTextFileWriter;
 import com.nuix.superutilities.query.QueryHelper;
 
 import nuix.Window;
-import javax.swing.border.EtchedBorder;
-import java.awt.Color;
 
 @SuppressWarnings("serial")
 public class TermCollectionTable extends JPanel {
@@ -45,14 +47,15 @@ public class TermCollectionTable extends JPanel {
 	public TermCollectionTable(Window nuixWindow) {
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[]{0, 0, 0, 0, 0};
-		gridBagLayout.rowHeights = new int[]{0, 0, 0, 0};
+		gridBagLayout.rowHeights = new int[]{0, 0, 0, 0, 0};
 		gridBagLayout.columnWeights = new double[]{0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
-		gridBagLayout.rowWeights = new double[]{0.0, 1.0, 0.0, Double.MIN_VALUE};
+		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
 		setLayout(gridBagLayout);
 		
 		JPanel panel = new JPanel();
 		panel.setBorder(new TitledBorder(null, "Query", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		GridBagConstraints gbc_panel = new GridBagConstraints();
+		gbc_panel.gridwidth = 3;
 		gbc_panel.insets = new Insets(0, 0, 5, 5);
 		gbc_panel.fill = GridBagConstraints.BOTH;
 		gbc_panel.gridx = 0;
@@ -116,6 +119,12 @@ public class TermCollectionTable extends JPanel {
 		});
 		btnSaveQuery.setIcon(new ImageIcon(TermCollectionTable.class.getResource("/com/nuix/termexplorer/page_save.png")));
 		
+		Component horizontalStrut = Box.createHorizontalStrut(20);
+		toolBar_1.add(horizontalStrut);
+		
+		JLabel lblNewLabel = new JLabel("Query Type:");
+		toolBar_1.add(lblNewLabel);
+		
 		termOperator = new JComboBox<String>();
 		termOperator.setToolTipText("Query Type");
 		toolBar_1.add(termOperator);
@@ -127,8 +136,8 @@ public class TermCollectionTable extends JPanel {
 		GridBagConstraints gbc_panel_1 = new GridBagConstraints();
 		gbc_panel_1.insets = new Insets(0, 0, 5, 5);
 		gbc_panel_1.fill = GridBagConstraints.BOTH;
-		gbc_panel_1.gridx = 1;
-		gbc_panel_1.gridy = 0;
+		gbc_panel_1.gridx = 0;
+		gbc_panel_1.gridy = 1;
 		add(panel_1, gbc_panel_1);
 		panel_1.setLayout(new BorderLayout(0, 0));
 		
@@ -183,8 +192,8 @@ public class TermCollectionTable extends JPanel {
 		GridBagConstraints gbc_panel_2 = new GridBagConstraints();
 		gbc_panel_2.insets = new Insets(0, 0, 5, 5);
 		gbc_panel_2.fill = GridBagConstraints.BOTH;
-		gbc_panel_2.gridx = 2;
-		gbc_panel_2.gridy = 0;
+		gbc_panel_2.gridx = 1;
+		gbc_panel_2.gridy = 1;
 		add(panel_2, gbc_panel_2);
 		panel_2.setLayout(new BorderLayout(0, 0));
 		
@@ -233,7 +242,7 @@ public class TermCollectionTable extends JPanel {
 		gbc_scrollPane.insets = new Insets(0, 0, 5, 0);
 		gbc_scrollPane.fill = GridBagConstraints.BOTH;
 		gbc_scrollPane.gridx = 0;
-		gbc_scrollPane.gridy = 1;
+		gbc_scrollPane.gridy = 2;
 		add(scrollPane, gbc_scrollPane);
 		
 		table = new JTable(model);
@@ -245,7 +254,7 @@ public class TermCollectionTable extends JPanel {
 		gbc_lblTermCount.insets = new Insets(0, 0, 0, 5);
 		gbc_lblTermCount.anchor = GridBagConstraints.WEST;
 		gbc_lblTermCount.gridx = 0;
-		gbc_lblTermCount.gridy = 2;
+		gbc_lblTermCount.gridy = 3;
 		add(lblTermCount, gbc_lblTermCount);
 	}
 

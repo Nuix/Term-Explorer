@@ -10,6 +10,7 @@ import com.nuix.superutilities.misc.ExpandedTermInfo;
 @SuppressWarnings("serial")
 public class TermExpansionMatchesTableModel extends DefaultTableModel {
 	String[] headers = new String[] {
+			"Originating Expressions",
 			"Matched Term",
 			"Similarity",
 			"Occurrences",
@@ -40,11 +41,12 @@ public class TermExpansionMatchesTableModel extends DefaultTableModel {
 	public Object getValueAt(int row, int column) {
 		ExpandedTermInfo matchedTerm = matchedTerms.get(row);
 		switch(column) {
-			case 0: return matchedTerm.getMatchedTerm();
-			case 1:
+			case 0: return matchedTerm.getOriginalTerm();
+			case 1: return matchedTerm.getMatchedTerm();
+			case 2:
 				if(matchedTerm.getSimilarity() < 0.0f) { return ""; }
 				else { return String.format("%.3f", matchedTerm.getSimilarity()); }
-			case 2:
+			case 3:
 				if(matchedTerm.getOcurrences() < 0) {return ""; }
 				else { return Long.toString(matchedTerm.getOcurrences()); }
 			default: return "?";
@@ -57,6 +59,7 @@ public class TermExpansionMatchesTableModel extends DefaultTableModel {
 			case 0: return String.class;
 			case 1: return String.class;
 			case 2: return String.class;
+			case 3: return String.class;
 			default: return String.class;
 		}
 	}

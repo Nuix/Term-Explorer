@@ -51,23 +51,25 @@ public class MainPanel extends JPanel {
 	private JProgressBar expansionProgressBar;
 	private JButton btnExpandterm;
 	private JLabel lblStatus;
+	private JLabel lblNewLabel;
+	private JLabel lblNewLabel_1;
 	
 	public MainPanel(Window nuixWindow, Case nuixCase) {
-		setBorder(new EmptyBorder(100, 100, 100, 100));
+		setBorder(new EmptyBorder(50, 50, 50, 50));
 		this.nuixCase = nuixCase;
 		
 		GridBagLayout gridBagLayout = new GridBagLayout();
-		gridBagLayout.columnWidths = new int[]{0, 600, 30, 600, 0, 0};
-		gridBagLayout.rowHeights = new int[]{0, 0, 0};
-		gridBagLayout.columnWeights = new double[]{1.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
-		gridBagLayout.rowWeights = new double[]{0.0, 1.0, Double.MIN_VALUE};
+		gridBagLayout.columnWidths = new int[]{0, 300, 30, 300, 0};
+		gridBagLayout.rowHeights = new int[]{0, 0, 0, 0};
+		gridBagLayout.columnWeights = new double[]{1.0, 5.0, 0.0, 1.0, Double.MIN_VALUE};
+		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 1.0, Double.MIN_VALUE};
 		setLayout(gridBagLayout);
 		
 		expressionsPanel = new JPanel();
 		expressionsPanel.setBorder(new EmptyBorder(2, 2, 2, 2));
 		GridBagConstraints gbc_expressionsPanel = new GridBagConstraints();
 		gbc_expressionsPanel.gridwidth = 3;
-		gbc_expressionsPanel.insets = new Insets(0, 0, 5, 5);
+		gbc_expressionsPanel.insets = new Insets(0, 0, 5, 0);
 		gbc_expressionsPanel.fill = GridBagConstraints.BOTH;
 		gbc_expressionsPanel.gridx = 1;
 		gbc_expressionsPanel.gridy = 0;
@@ -182,20 +184,35 @@ public class MainPanel extends JPanel {
 		gbc_expansionProgressBar.gridy = 3;
 		expressionsPanel.add(expansionProgressBar, gbc_expansionProgressBar);
 		
+		lblNewLabel = new JLabel("Expression Matches");
+		lblNewLabel.setFont(new Font("Tahoma", Font.BOLD, 14));
+		GridBagConstraints gbc_lblNewLabel = new GridBagConstraints();
+		gbc_lblNewLabel.insets = new Insets(0, 0, 5, 5);
+		gbc_lblNewLabel.gridx = 1;
+		gbc_lblNewLabel.gridy = 1;
+		add(lblNewLabel, gbc_lblNewLabel);
+		
+		lblNewLabel_1 = new JLabel("Term Collection");
+		lblNewLabel_1.setFont(new Font("Tahoma", Font.BOLD, 14));
+		GridBagConstraints gbc_lblNewLabel_1 = new GridBagConstraints();
+		gbc_lblNewLabel_1.insets = new Insets(0, 0, 5, 0);
+		gbc_lblNewLabel_1.gridx = 3;
+		gbc_lblNewLabel_1.gridy = 1;
+		add(lblNewLabel_1, gbc_lblNewLabel_1);
+		
 		termExpansionMatchesTable = new TermExpansionMatchesTable();
 		GridBagConstraints gbc_termExpansionMatchesTable = new GridBagConstraints();
 		gbc_termExpansionMatchesTable.insets = new Insets(0, 0, 0, 5);
 		gbc_termExpansionMatchesTable.fill = GridBagConstraints.BOTH;
 		gbc_termExpansionMatchesTable.gridx = 1;
-		gbc_termExpansionMatchesTable.gridy = 1;
+		gbc_termExpansionMatchesTable.gridy = 2;
 		add(termExpansionMatchesTable, gbc_termExpansionMatchesTable);
 		
 		termCollectionTable = new TermCollectionTable(nuixWindow);
 		GridBagConstraints gbc_termCollectionTable = new GridBagConstraints();
-		gbc_termCollectionTable.insets = new Insets(0, 0, 0, 5);
 		gbc_termCollectionTable.fill = GridBagConstraints.BOTH;
 		gbc_termCollectionTable.gridx = 3;
-		gbc_termCollectionTable.gridy = 1;
+		gbc_termCollectionTable.gridy = 2;
 		add(termCollectionTable, gbc_termCollectionTable);
 		
 		termExpansionMatchesTable.onSendToCollection((matchedTerms) -> {
@@ -252,7 +269,7 @@ public class MainPanel extends JPanel {
 					});
 					
 					String termInput = txtSingletermexpression.getText();
-					String[] terms = termInput.split("\\s+");
+					String[] splitTerms = termInput.split("\\s+");
 					String scopeQuery = txtScopequery.getText();
 					
 					int termFieldsIndex = termFields.getSelectedIndex();
@@ -264,20 +281,33 @@ public class MainPanel extends JPanel {
 					// we encounter a given matched term (since it should be the same each time) and then regarding
 					// similarity scores, we will report the highest we find
 					Map<String,ExpandedTermInfo> termInfoByMatchedTerm = new HashMap<String,ExpandedTermInfo>();
-					for(String term : terms) {
+					for(String term : splitTerms) {
+						
+						// Just in case the split somehow yields empty terms
+						if(term == null || term.trim().isEmpty()) {
+							continue;
+						}
+						
 						setStatusMessage("Please Wait, Expanding Term: "+term);
 						List<ExpandedTermInfo> termInfos = te.expandTerm(nuixCase, content, properties, term, scopeQuery);
+						
 						// Iterate each matching term info
 						for(ExpandedTermInfo eti : termInfos) {
+							
 							// Are we already tracking this resulting term?
 							if(termInfoByMatchedTerm.containsKey(eti.getMatchedTerm())) {
+								
 								// We are already tracking this term, so merge in results
 								ExpandedTermInfo existingInfo = termInfoByMatchedTerm.get(eti.getMatchedTerm()); 
 								if(eti.getSimilarity() > existingInfo.getSimilarity()) {
-									existingInfo.setSimilarity(eti.getSimilarity());	
+									existingInfo.setSimilarity(eti.getSimilarity());
 								}
+								
+								// Kind of a hacky solution, we append each additional originating term expression on so
+								// we can report what expressions resulted in this term being included
+								existingInfo.setOriginalTerm(existingInfo.getOriginalTerm()+", "+eti.getOriginalTerm());
 							} else {
-								// This is the first time weve seen this matched term, so we just stick
+								// This is the first time we've seen this matched term, so we just stick
 								// it into the listing
 								termInfoByMatchedTerm.put(eti.getMatchedTerm(),eti);
 							}

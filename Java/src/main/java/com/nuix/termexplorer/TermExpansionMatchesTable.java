@@ -38,7 +38,7 @@ public class TermExpansionMatchesTable extends JPanel {
 		gridBagLayout.columnWidths = new int[]{110, 0, 0, 0};
 		gridBagLayout.rowHeights = new int[]{0, 0, 0, 0, 0};
 		gridBagLayout.columnWeights = new double[]{0.0, 0.0, 1.0, Double.MIN_VALUE};
-		gridBagLayout.rowWeights = new double[]{0.0, 1.0, 0.0, 0.0, Double.MIN_VALUE};
+		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
 		setLayout(gridBagLayout);
 		
 		JPanel panel = new JPanel();
@@ -109,9 +109,14 @@ public class TermExpansionMatchesTable extends JPanel {
 					try {
 						fos = new FileOutputStream(outputCsvFile);
 						bw = new BufferedWriter(new OutputStreamWriter(fos));
-						bw.write(toCsv("Matched Term","Highest Similarity","Occurrences"));
+						// Write headers
+						bw.write(toCsv("Original Expression","Matched Term","Highest Similarity","Occurrences"));
+						bw.newLine();
+						
+						// Write each expanded term info
 						for(ExpandedTermInfo eti : model.getRecords()) {
 							bw.write(toCsv(
+								eti.getOriginalTerm(),
 								eti.getMatchedTerm(),
 								Float.toString(eti.getSimilarity()),
 								Long.toString(eti.getOcurrences())
@@ -120,13 +125,23 @@ public class TermExpansionMatchesTable extends JPanel {
 						}
 						bw.close();
 						fos.close();
+						
+						CommonDialogs.showMessage("CSV saved to "+outputCsvFile.getAbsolutePath(), "CSV Saved");
 					} catch (Exception e) {
-						e.printStackTrace();
+						CommonDialogs.showError("Error while saving CSV: "+e.getMessage(), "Error Saving CSV");
 					} 
 				}
 			}
 		});
 		toolBar_1.add(btnNewButton);
+		
+		JLabel lblNewLabel = new JLabel("Note: You can select rows in the table below and then copy and past them as well (On Windows CTRL+C / CTRL+V)");
+		GridBagConstraints gbc_lblNewLabel = new GridBagConstraints();
+		gbc_lblNewLabel.gridwidth = 3;
+		gbc_lblNewLabel.insets = new Insets(0, 0, 5, 0);
+		gbc_lblNewLabel.gridx = 0;
+		gbc_lblNewLabel.gridy = 1;
+		add(lblNewLabel, gbc_lblNewLabel);
 		
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
@@ -135,20 +150,12 @@ public class TermExpansionMatchesTable extends JPanel {
 		gbc_scrollPane.insets = new Insets(0, 0, 5, 0);
 		gbc_scrollPane.fill = GridBagConstraints.BOTH;
 		gbc_scrollPane.gridx = 0;
-		gbc_scrollPane.gridy = 1;
+		gbc_scrollPane.gridy = 2;
 		add(scrollPane, gbc_scrollPane);
 		
 		table = new JTable(model);
 		table.setFillsViewportHeight(true);
 		scrollPane.setViewportView(table);
-		
-		JLabel lblNewLabel = new JLabel("Note: You can select rows in the above table and then copy and past them as well (On Windows CTRL+C / CTRL+V)");
-		GridBagConstraints gbc_lblNewLabel = new GridBagConstraints();
-		gbc_lblNewLabel.gridwidth = 3;
-		gbc_lblNewLabel.insets = new Insets(0, 0, 5, 5);
-		gbc_lblNewLabel.gridx = 0;
-		gbc_lblNewLabel.gridy = 2;
-		add(lblNewLabel, gbc_lblNewLabel);
 		
 		lblTermCount = new JLabel("Term Count: 0");
 		GridBagConstraints gbc_lblTermCount = new GridBagConstraints();
