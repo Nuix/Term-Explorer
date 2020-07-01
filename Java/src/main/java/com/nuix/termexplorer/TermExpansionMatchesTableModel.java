@@ -5,18 +5,17 @@ import java.util.List;
 
 import javax.swing.table.DefaultTableModel;
 
-import com.nuix.superutilities.misc.ExpandedTermInfo;
-
 @SuppressWarnings("serial")
 public class TermExpansionMatchesTableModel extends DefaultTableModel {
 	String[] headers = new String[] {
-			"Originating Expressions",
+			"Original Expressions",
 			"Matched Term",
 			"Similarity",
 			"Occurrences",
+			"Scope Responsive Items"
 	};
 	
-	private List<ExpandedTermInfo> matchedTerms = new ArrayList<ExpandedTermInfo>();
+	private List<ExpandedTermAndSeachInfo> matchedTerms = new ArrayList<ExpandedTermAndSeachInfo>();
 	
 	@Override
 	public int getRowCount() {
@@ -39,7 +38,7 @@ public class TermExpansionMatchesTableModel extends DefaultTableModel {
 	
 	@Override
 	public Object getValueAt(int row, int column) {
-		ExpandedTermInfo matchedTerm = matchedTerms.get(row);
+		ExpandedTermAndSeachInfo matchedTerm = matchedTerms.get(row);
 		switch(column) {
 			case 0: return matchedTerm.getOriginalTerm();
 			case 1: return matchedTerm.getMatchedTerm();
@@ -49,6 +48,8 @@ public class TermExpansionMatchesTableModel extends DefaultTableModel {
 			case 3:
 				if(matchedTerm.getOcurrences() < 0) {return ""; }
 				else { return Long.toString(matchedTerm.getOcurrences()); }
+			case 4:
+				return Long.toString(matchedTerm.getScopeItemCount());
 			default: return "?";
 		}
 	}
@@ -60,25 +61,26 @@ public class TermExpansionMatchesTableModel extends DefaultTableModel {
 			case 1: return String.class;
 			case 2: return String.class;
 			case 3: return String.class;
+			case 4: return String.class;
 			default: return String.class;
 		}
 	}
 	
-	public void setMatchedTerms(List<ExpandedTermInfo> matchedTerms) {
-		this.matchedTerms = matchedTerms;
+	public void setMatchedTerms(List<ExpandedTermAndSeachInfo> finalMatchedTerms) {
+		this.matchedTerms = finalMatchedTerms;
 		this.fireTableDataChanged();
 	}
 	
-	public List<ExpandedTermInfo> getRecords(int[] rowIndices){
-		List<ExpandedTermInfo> result = new ArrayList<ExpandedTermInfo>();
+	public List<ExpandedTermAndSeachInfo> getRecords(int[] rowIndices){
+		List<ExpandedTermAndSeachInfo> result = new ArrayList<ExpandedTermAndSeachInfo>();
 		for (int i = 0; i < rowIndices.length; i++) {
 			result.add(matchedTerms.get(rowIndices[i]));
 		}
 		return result;
 	}
 	
-	public List<ExpandedTermInfo> getRecords(){
-		List<ExpandedTermInfo> result = new ArrayList<ExpandedTermInfo>();
+	public List<ExpandedTermAndSeachInfo> getRecords(){
+		List<ExpandedTermAndSeachInfo> result = new ArrayList<ExpandedTermAndSeachInfo>();
 		result.addAll(matchedTerms);
 		return result;
 	}

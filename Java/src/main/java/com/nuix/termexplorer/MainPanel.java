@@ -218,9 +218,6 @@ public class MainPanel extends JPanel {
 		termExpansionMatchesTable.onSendToCollection((matchedTerms) -> {
 			List<String> terms = matchedTerms.stream().map(mt -> mt.getMatchedTerm()).collect(Collectors.toList());
 			termCollectionTable.addTerms(terms);
-//			for(ExpandedTermInfo matchedTerm : matchedTerms) {
-//				termCollectionTable.addTerm(matchedTerm.getMatchedTerm());
-//			}
 		});
 	}
 	
@@ -315,8 +312,25 @@ public class MainPanel extends JPanel {
 					}
 					
 					// We just need to flatten out our results now
-					List<ExpandedTermInfo> finalMatchedTerms = new ArrayList<ExpandedTermInfo>();
-					finalMatchedTerms.addAll(termInfoByMatchedTerm.values());
+					List<ExpandedTermAndSeachInfo> finalMatchedTerms = new ArrayList<ExpandedTermAndSeachInfo>();
+					for(ExpandedTermInfo termInfo : termInfoByMatchedTerm.values()) {
+						ExpandedTermAndSeachInfo etsi = new ExpandedTermAndSeachInfo(termInfo);
+						setStatusMessage("Determining scope item hit count for: "+etsi.getMatchedTerm());
+						String termQueryCriteria = "";
+						if(content && properties) { termQueryCriteria = String.format("content:%s OR properties:%s", etsi.getMatchedTerm(), etsi.getMatchedTerm()); }
+						else if(content && !properties) { termQueryCriteria = String.format("content:%s", etsi.getMatchedTerm()); }
+						else if(!content && properties) { termQueryCriteria = String.format("properties:%s", etsi.getMatchedTerm()); }
+						String scopedCountQuery = "";
+						if(scopeQuery.trim().isEmpty()) {
+							scopedCountQuery = String.format("(%s)", termQueryCriteria);
+						} else {
+							scopedCountQuery = String.format("(%s) AND (%s)", scopeQuery, termQueryCriteria);
+						}
+						
+						etsi.setScopeItemCount(nuixCase.count(scopedCountQuery)); 
+						finalMatchedTerms.add(etsi);
+					}
+					
 					// Need to resort them descending
 					Collections.sort(finalMatchedTerms, (v1,v2)->{ return Long.compare(-v1.getOcurrences(), -v2.getOcurrences()); });
 					

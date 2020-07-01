@@ -24,13 +24,11 @@ import javax.swing.JToolBar;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.border.TitledBorder;
 
-import com.nuix.superutilities.misc.ExpandedTermInfo;
-
 @SuppressWarnings("serial")
 public class TermExpansionMatchesTable extends JPanel {
 	private JTable table;
 	private TermExpansionMatchesTableModel model = new TermExpansionMatchesTableModel();
-	private Consumer<List<ExpandedTermInfo>> sendToCollectionCallback = null;
+	private Consumer<List<ExpandedTermAndSeachInfo>> sendToCollectionCallback = null;
 	private JLabel lblTermCount;
 	
 	public TermExpansionMatchesTable() {
@@ -110,16 +108,17 @@ public class TermExpansionMatchesTable extends JPanel {
 						fos = new FileOutputStream(outputCsvFile);
 						bw = new BufferedWriter(new OutputStreamWriter(fos));
 						// Write headers
-						bw.write(toCsv("Original Expression","Matched Term","Highest Similarity","Occurrences"));
+						bw.write(toCsv("Original Expression","Matched Term","Highest Similarity","Occurrences","Scope Responsive Items"));
 						bw.newLine();
 						
 						// Write each expanded term info
-						for(ExpandedTermInfo eti : model.getRecords()) {
+						for(ExpandedTermAndSeachInfo eti : model.getRecords()) {
 							bw.write(toCsv(
 								eti.getOriginalTerm(),
 								eti.getMatchedTerm(),
 								Float.toString(eti.getSimilarity()),
-								Long.toString(eti.getOcurrences())
+								Long.toString(eti.getOcurrences()),
+								Long.toString(eti.getScopeItemCount())
 							));
 							bw.newLine();
 						}
@@ -166,12 +165,12 @@ public class TermExpansionMatchesTable extends JPanel {
 		add(lblTermCount, gbc_lblTermCount);
 	}
 	
-	public void onSendToCollection(Consumer<List<ExpandedTermInfo>> callback) {
+	public void onSendToCollection(Consumer<List<ExpandedTermAndSeachInfo>> callback) {
 		sendToCollectionCallback = callback;
 	}
 
-	public void setMatchedTerms(List<ExpandedTermInfo> matchedTerms) {
-		model.setMatchedTerms(matchedTerms);
-		lblTermCount.setText("Term Count: "+matchedTerms.size());
+	public void setMatchedTerms(List<ExpandedTermAndSeachInfo> finalMatchedTerms) {
+		model.setMatchedTerms(finalMatchedTerms);
+		lblTermCount.setText("Term Count: "+finalMatchedTerms.size());
 	}
 }
