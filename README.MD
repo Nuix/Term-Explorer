@@ -41,6 +41,26 @@ Fuzzy similarity can be calculated using several difference methods:
 
 Resulting matched terms can be exported to a CSV or added to a running collection of terms you build up (the right hand table).  This collection of terms you have selected can then be used in different ways including generating a query from the terms or saving them to a file.
 
+## Expression Matches Table
+
+The **Expression Matches** table is populated with terms that match your expression against the specified locations (`content` and/or `properties`) and fall within items responsive to your scope query.  The table, and CSVs exported from it, have the following columns.
+
+| Column | Description |
+|--------|-------------|
+| `Original Expressions` | What expression or expressions you provided led to this term being a match. |
+| `Matched Term` | A term which matched one or more of your provided single term expressions. |
+| `Similarity` | When the provided expression is a fuzzy expression, this column will contain the highest similarity value of all the fuzzy expressions that contributed to matching this term. |
+| `Occurrences` | How many times does this term occur in the scope.  A single item may have multiple occurrences of any given term and therefore contribute more than 1 occurence to this count. |
+| `Scope Responsive Items` | Based the scope query and whether you chose to resolve matches against `content` and/or `properties` this will be the count of items within those contraints that have the given matched term.  See below for more detail.|
+
+When determining the `Scope Responsive Items` count column, [Case.count(String queryString)](https://download.nuix.com/releases/desktop/stable/docs/en/scripting/api/nuix/Case.html#count-java.lang.String-) is used to determine responsive item count, using queries built with the following logic.
+
+| Matched Term | Fields | Scope Query | Count Query |
+|--------------|--------|-------------|-------------|
+| `catalina`   | `content` | `kind:email` | `(kind:email) AND (content:catalina)` |
+| `catalina`   | `properties` | `kind:email` | `(kind:email) AND (properties:catalina)` |
+| `catalina`   | `content` and `properties` | `kind:email` | `(kind:email) AND (content:catalina OR properties:catalina)` |
+
 # Getting Started
 
 ## Setup
